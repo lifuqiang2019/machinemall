@@ -70,14 +70,14 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-6">
-                            <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition-colors w-fit">
+                            <div className="flex items-center gap-4 p-5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition-colors w-fit">
                                 <div className="p-2 bg-secondary/20 rounded-lg text-secondary group-hover:scale-110 transition-transform">
                                     <CheckCircle2 size={24} />
                                 </div>
                                 <span className="text-sm font-bold">100% Secure Trade Protection</span>
                             </div>
 
-                            <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition-colors w-fit">
+                            <div className="flex items-center gap-4 p-5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition-colors w-fit">
                                 <div className="p-2 bg-white/10 rounded-lg text-white group-hover:scale-110 transition-transform">
                                     <Award size={24} />
                                 </div>
@@ -118,14 +118,14 @@ export default function RegisterPage() {
                         </Link>
                     </div>
 
-                    <div className="bg-white p-10 md:p-12 rounded-[32px] shadow-[0_20px_80px_rgba(0,0,0,0.06)] border border-gray-100">
+                    <div className="bg-white p-10 md:p-12 rounded-xl shadow-[0_20px_80px_rgba(0,0,0,0.06)] border border-gray-100">
                         <div className="mb-10 text-center lg:text-left">
                             <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
                             <p className="text-gray-500 mt-3 font-medium">Join our global professional network</p>
                         </div>
 
                         {error && (
-                            <div className="bg-red-50 text-red-600 px-5 py-4 rounded-2xl mb-8 text-sm border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                            <div className="bg-red-50 text-red-600 px-5 py-4 rounded-xl mb-8 text-sm border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
                                 <div className="w-2 h-2 rounded-full bg-red-600"></div>
                                 {error}
                             </div>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="Your full name"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
                                         required
                                     />
                                 </div>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="business@company.com"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
                                         required
                                     />
                                 </div>
@@ -171,7 +171,7 @@ export default function RegisterPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="Min. 8 characters"
-                                        className="w-full pl-12 pr-12 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
+                                        className="w-full pl-12 pr-12 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
                                         required
                                     />
                                     <button
@@ -187,7 +187,7 @@ export default function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-[#0154A6] text-white py-4 rounded-2xl font-bold shadow-2xl shadow-primary/30 hover:bg-primary-hover hover:-translate-y-1 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2 mt-4 text-lg"
+                                className="w-full bg-[#0154A6] text-white py-4 rounded-xl font-bold shadow-2xl shadow-primary/30 hover:bg-primary-hover hover:-translate-y-1 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2 mt-4 text-lg"
                             >
                                 {isLoading ? <Loader2 className="animate-spin" size={24} /> : "Get Started"}
                             </button>
@@ -204,7 +204,7 @@ export default function RegisterPage() {
 
                         <button
                             onClick={() => handleSocialLogin("github")}
-                            className="w-full flex items-center justify-center gap-3 px-4 py-4 border border-gray-200 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all font-bold text-gray-700 active:scale-[0.98] group"
+                            className="w-full flex items-center justify-center gap-3 px-4 py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-bold text-gray-700 active:scale-[0.98] group"
                         >
                             <Github size={22} />
                             <span>Continue with GitHub</span>

@@ -1,12 +1,5 @@
-import React from "react";
-
-interface Product {
-    id: number;
-    name: string;
-    price: string;
-    image: string;
-    category: string;
-}
+import Link from "next/link";
+import { Product } from "@/lib/mockData";
 
 interface ProductSectionProps {
     title: string;
@@ -27,25 +20,27 @@ const ProductSection = ({ title, products }: ProductSectionProps) => {
                 </div>
                 <div className="grid grid-cols-4 gap-5">
                     {products.map((product) => (
-                        <div key={product.id} className="bg-white border border-transparent p-[15px] transition-all cursor-pointer hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:border-gray-200 group">
-                            <div className="w-full aspect-[4/3] overflow-hidden mb-[15px]">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
+                        <Link href={`/product/${product.id}`} key={product.id}>
+                            <div className="bg-white border border-transparent p-[15px] transition-all cursor-pointer hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:border-gray-200 group h-full">
+                                <div className="w-full aspect-[4/3] overflow-hidden mb-[15px]">
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-xs text-text-muted block mb-[5px]">{product.category}</span>
+                                    <h3 className="text-[15px] font-semibold mb-[10px] h-10 overflow-hidden line-clamp-2">
+                                        {product.name}
+                                    </h3>
+                                    <p className="text-lg text-[#e4393c] font-bold mb-[15px]">{product.price}</p>
+                                    <button className="w-full p-[10px] bg-white border border-primary text-primary font-semibold cursor-pointer transition-all group-hover:bg-primary group-hover:text-white mt-auto">
+                                        Inquiry Now
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <span className="text-xs text-text-muted block mb-[5px]">{product.category}</span>
-                                <h3 className="text-[15px] font-semibold mb-[10px] h-10 overflow-hidden line-clamp-2">
-                                    {product.name}
-                                </h3>
-                                <p className="text-lg text-[#e4393c] font-bold mb-[15px]">{product.price}</p>
-                                <button className="w-full p-[10px] bg-white border border-primary text-primary font-semibold cursor-pointer transition-all group-hover:bg-primary group-hover:text-white">
-                                    Inquiry Now
-                                </button>
-                            </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

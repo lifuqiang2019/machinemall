@@ -15,6 +15,20 @@ export interface Product {
     image: string;
     category: string;
     status?: string;
+    images?: string[];
+    description?: string;
+    summary?: string[];
+    specs?: {
+        label: string;
+        value: string;
+    }[];
+    shipping?: {
+        leadTime: string;
+        moq: string;
+        ability: string;
+        stock: string;
+        port: string;
+    };
 }
 
 export const NAV_ITEMS = [
@@ -137,3 +151,45 @@ export const CATEGORY_BAR_ITEMS = [
     { name: "Truck Crane", image: "https://placehold.co/100x100?text=Truck+Crane" },
     { name: "Wheel loader", image: "https://placehold.co/100x100?text=Wheel+loader" },
 ];
+
+export const PRODUCT_DETAILS: Record<string, Product> = {
+    "5678": {
+        id: "5678",
+        name: "XCMG official 7m height electric mobile scissor lift GTJZ0607 Aerial Work Platform",
+        price: "Inquiry for Price",
+        image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=1000&auto=format&fit=crop",
+        category: "Aerial Work Platforms",
+        status: "New",
+        images: [
+            "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1000&auto=format&fit=crop"
+        ],
+        description: "The GTJZ0607 electric scissor lift is a high-performance aerial work platform designed for efficiency and safety. Featuring zero-emission electric drive, it's perfect for indoor use in warehouses, office buildings, and shopping malls. Its compact design allows for easy navigation in tight spaces.",
+        summary: [
+            "Working Height: 7.8m",
+            "Platform Capacity: 230kg",
+            "Electric Drive System",
+            "Max Gradeability: 25%",
+            "Compact Design: 1882*760*1771mm"
+        ],
+        specs: [
+            { label: "Weight", value: "1490kg" },
+            { label: "Overall Dimension", value: "1882*760*1771mm" },
+            { label: "Max Lifting Height", value: "7.8m" },
+            { label: "Rated Loading Capacity", value: "230kg" },
+            { label: "Power", value: "3kw" },
+            { label: "Lift Drive", value: "Hydraulic" },
+            { label: "Model Number", value: "GTJZ0607" },
+            { label: "Brand Name", value: "XCMG" },
+            { label: "Certification", value: "CE/ISO" }
+        ],
+        shipping: {
+            leadTime: "7 days for ready goods",
+            moq: "1 Piece",
+            ability: "10,000 Sets per Month",
+            stock: "Over 5000 units",
+            port: "Any Port In China"
+        }
+    }
+};
