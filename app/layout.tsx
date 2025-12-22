@@ -21,10 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="antialiased text-text-main bg-white min-h-screen flex flex-col">
-          <Header />
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {children}
         </div>
       </body>
     </html>
