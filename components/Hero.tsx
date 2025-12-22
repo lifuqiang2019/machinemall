@@ -27,6 +27,7 @@ const BANNERS = [
 
 const Hero = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
     const nextSlide = useCallback(() => {
         setCurrentSlide((prev) => (prev + 1) % BANNERS.length);
@@ -45,18 +46,55 @@ const Hero = () => {
         <section className="bg-white pb-6">
             <div className="max-w-container mx-auto px-10 flex gap-0">
                 {/* Category Sidebar */}
-                <div className="w-[240px] bg-white h-[450px] relative z-10 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+                <div
+                    className="w-[240px] bg-white h-[450px] relative z-20 shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+                    onMouseLeave={() => setHoveredCategory(null)}
+                >
                     <ul className="list-none">
                         {CATEGORIES.map((cat, index) => (
                             <li
                                 key={index}
                                 className="px-5 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all group border-b border-gray-50 last:border-0"
+                                onMouseEnter={() => setHoveredCategory(cat.id)}
                             >
-                                <span className="text-[14px] font-medium text-text-main group-hover:text-primary transition-colors">{cat.name}</span>
-                                <ChevronRight size={16} className="text-gray-400 group-hover:text-primary transition-all" />
+                                <span className={`text-[14px] font-medium transition-colors ${hoveredCategory === cat.id ? 'text-primary' : 'text-text-main'} group-hover:text-primary`}>
+                                    {cat.name}
+                                </span>
+                                <ChevronRight size={16} className={`transition-all ${hoveredCategory === cat.id ? 'text-primary translate-x-1' : 'text-gray-400'} group-hover:text-primary group-hover:translate-x-1`} />
                             </li>
                         ))}
                     </ul>
+
+                    {/* Hover Submenu Panel */}
+                    {hoveredCategory && (
+                        <div className="absolute top-0 left-full w-[850px] h-full bg-white shadow-[10px_0_30px_rgba(0,0,0,0.05)] border-l border-gray-100 p-8 z-[30] overflow-y-auto custom-scrollbar">
+                            <div className="flex flex-col gap-8">
+                                {CATEGORIES.find(c => c.id === hoveredCategory)?.sections?.map((section, sIdx) => (
+                                    <div key={sIdx}>
+                                        <h3 className="text-[14px] font-bold text-text-main mb-4 border-b border-gray-50 pb-2">
+                                            {section.title}
+                                        </h3>
+                                        <div className="grid grid-cols-3 gap-x-6 gap-y-3">
+                                            {section.items.map((item, iIdx) => (
+                                                <a
+                                                    key={iIdx}
+                                                    href="#"
+                                                    className="text-[13px] text-gray-500 hover:text-primary transition-colors leading-relaxed block"
+                                                >
+                                                    {item}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!CATEGORIES.find(c => c.id === hoveredCategory)?.sections || CATEGORIES.find(c => c.id === hoveredCategory)?.sections?.length === 0) && (
+                                    <div className="py-10 text-center text-gray-400 text-sm">
+                                        Subcategories coming soon.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Main Carousel Banner */}

@@ -2,7 +2,10 @@ export interface Category {
     id: string;
     name: string;
     icon?: string;
-    subcategories?: string[];
+    sections?: {
+        title: string;
+        items: string[];
+    }[];
 }
 
 export interface Product {
@@ -27,28 +30,43 @@ export const CATEGORIES: Category[] = [
     {
         id: "34",
         name: "Engineering & Construction Machinery",
-        subcategories: ["Excavators", "Cranes", "Loaders", "Road Machinery"],
+        sections: [
+            {
+                title: "Engineering & Construction Crane",
+                items: ["Truck Crane", "Crawler Crane", "Truck Mounted Crane", "Tower Crane", "All Terrain Crane", "Rough Terrain Crane", "Gantry Crane"]
+            },
+            {
+                title: "Earth-Moving Machinery",
+                items: ["Crawler Excavator", "Wheel Excavator", "Wheel Loader", "Skid Steer Loader", "Backhoe Loader", "Bulldozer"]
+            },
+            {
+                title: "Road Construction & Maintenance Machinery",
+                items: ["Road Roller", "Motor Grader", "Milling Machine", "Paver", "Soil Stabilizer", "Asphalt Mixing Plant", "Cold Recycler", "Asphalt Distributor", "Synchronous Chip Sealer"]
+            }
+        ]
     },
     {
         id: "38",
         name: "Energy & Mining Equipment",
-        subcategories: ["Mining Trucks", "Drilling Rigs"],
+        sections: [
+            {
+                title: "Mining Equipment",
+                items: ["Mining Truck", "Mining Excavator", "Drilling Rig", "Crushing Plant"]
+            }
+        ]
     },
     {
         id: "35",
         name: "Agriculture & Forestry Machinery",
-        subcategories: ["Tractors", "Harvesters"],
+        sections: [
+            {
+                title: "Agriculture",
+                items: ["Tractor", "Harvester", "Planter"]
+            }
+        ]
     },
-    {
-        id: "45",
-        name: "Sanitation Machinery",
-        subcategories: ["Garbage Trucks", "Sweepers"],
-    },
-    {
-        id: "1044",
-        name: "Storage & Logistics Equipment",
-        subcategories: ["Forklifts", "Pallet Trucks"],
-    },
+    { id: "45", name: "Sanitation Machinery", sections: [] },
+    { id: "1044", name: "Storage & Logistics Equipment", sections: [] },
 ];
 
 export const FEATURED_PRODUCTS: Product[] = [
