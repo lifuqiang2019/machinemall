@@ -60,7 +60,7 @@ const Hero = () => {
                                 <span className={`text-[14px] font-medium transition-colors ${hoveredCategory === cat.id ? 'text-primary' : 'text-text-main'} group-hover:text-primary`}>
                                     {cat.name}
                                 </span>
-                                <ChevronRight size={16} className={`transition-all ${hoveredCategory === cat.id ? 'text-primary translate-x-1' : 'text-gray-400'} group-hover:text-primary group-hover:translate-x-1`} />
+                                <ChevronRight size={16} className={`flex-shrink-0 transition-all ${hoveredCategory === cat.id ? 'text-primary translate-x-1' : 'text-gray-400'} group-hover:text-primary group-hover:translate-x-1`} />
                             </li>
                         ))}
                     </ul>
