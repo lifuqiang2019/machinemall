@@ -21,6 +21,9 @@ export class Product {
   @Column('simple-array', { nullable: true })
   images: string[];
 
+  @Column({ default: false })
+  isFeatured: boolean;
+
   @Column({ nullable: true })
   mainImage: string; // Main image URL
 

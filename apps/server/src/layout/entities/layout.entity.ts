@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 
 @Entity()
@@ -18,10 +18,10 @@ export class Layout {
   @Column({ default: true })
   isActive: boolean; // 是否显示
 
-  @Column({ nullable: true })
-  categoryId: number;
+  @Column('simple-json', { nullable: true })
+  config: any; // Store extra config like carousel slides or section specific settings
 
-  @ManyToOne(() => Category)
-  @JoinColumn({ name: 'categoryId' })
-  category: Category;
+  @ManyToMany(() => Category)
+  @JoinTable()
+  categories: Category[];
 }

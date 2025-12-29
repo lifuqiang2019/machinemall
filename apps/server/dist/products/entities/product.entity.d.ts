@@ -6,6 +6,7 @@ export declare class Product {
     price: number;
     stock: number;
     images: string[];
+    isFeatured: boolean;
     mainImage: string;
     details: any;
     category: Category;

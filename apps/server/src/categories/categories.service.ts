@@ -16,6 +16,7 @@ export class CategoriesService {
     const category = new Category();
     category.name = createCategoryDto.name;
     category.description = createCategoryDto.description || '';
+    category.image = createCategoryDto.image || '';
     
     if (createCategoryDto.parentId) {
       const parent = await this.categoriesRepository.findOneBy({ id: createCategoryDto.parentId });
@@ -58,11 +59,13 @@ export class CategoriesService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    console.log(`[Backend Service] Update payload for ${id}:`, updateCategoryDto);
     const category = await this.categoriesRepository.findOneBy({ id });
     if (!category) return null;
 
     category.name = updateCategoryDto.name ?? category.name;
     category.description = updateCategoryDto.description ?? category.description;
+    category.image = updateCategoryDto.image ?? category.image;
 
     if (updateCategoryDto.parentId) {
        const parent = await this.categoriesRepository.findOneBy({ id: updateCategoryDto.parentId });
@@ -73,6 +76,7 @@ export class CategoriesService {
       category.parent = null;
     }
 
+    console.log(`[Backend Service] Saving category:`, category);
     return this.categoriesRepository.save(category);
   }
 

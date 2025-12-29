@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Space, message, Row, Col, Card, Select, TreeSelect, Popconfirm } from 'antd';
-import { PlusOutlined, DeleteOutlined, FilterOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, FilterOutlined, EditOutlined, PictureOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import ImageUpload from '../components/ImageUpload';
 
 interface Category {
   id: number;
   name: string;
   description: string;
+  image?: string;
   createdAt: string;
   children?: Category[];
   parent?: Category;
@@ -17,6 +19,7 @@ const CategoriesPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [mainImage, setMainImage] = useState<string>('');
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -28,12 +31,14 @@ const CategoriesPage: React.FC = () => {
     try {
       const response = await axios.get('http://localhost:3000/categories');
       // Ensure children is undefined if empty array to avoid empty expand icon
-      const processData = (data: Category[]): Category[] => {
+      // Also inject parentId to each child for correct editing logic
+      const processData = (data: Category[], parentId?: number): Category[] => {
           return data.map(item => {
-              const children = item.children && item.children.length > 0 ? processData(item.children) : undefined;
+              const children = item.children && item.children.length > 0 ? processData(item.children, item.id) : undefined;
               return {
                   ...item,
                   key: item.id, // Ensure key is present for Antd Table
+                  parentId: parentId, // Inject parentId manually since it might be missing in tree structure
                   children
               };
           });
@@ -49,16 +54,19 @@ const CategoriesPage: React.FC = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      const data = { ...values, image: mainImage };
+      console.log('Submitting Category Data:', data);
       if (editingCategory) {
-        await axios.patch(`http://localhost:3000/categories/${editingCategory.id}`, values);
+        await axios.patch(`http://localhost:3000/categories/${editingCategory.id}`, data);
         message.success('分类更新成功');
       } else {
-        await axios.post('http://localhost:3000/categories', values);
+        await axios.post('http://localhost:3000/categories', data);
         message.success('分类创建成功');
       }
       setIsModalOpen(false);
       form.resetFields();
       setEditingCategory(null);
+      setMainImage('');
       fetchCategories();
     } catch (error: any) {
       console.error(error);
@@ -68,9 +76,10 @@ const CategoriesPage: React.FC = () => {
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
+    setMainImage(category.image || '');
     form.setFieldsValue({
         ...category,
-        parentId: category.parent?.id // Ensure parentId is set for TreeSelect
+        parentId: category.parentId || category.parent?.id
     });
     setIsModalOpen(true);
   };
@@ -90,6 +99,14 @@ const CategoriesPage: React.FC = () => {
       title: '分类名称',
       dataIndex: 'name',
       key: 'name',
+    },
+    {
+      title: '图标',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image: string) => (
+          image ? <img src={image} alt="icon" style={{ width: 30, height: 30, objectFit: 'contain' }} /> : <PictureOutlined style={{ color: '#ccc' }} />
+      )
     },
     {
       title: '描述',
@@ -124,7 +141,7 @@ const CategoriesPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h2 style={{ margin: 0 }}>分类管理</h2>
         <Space>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingCategory(null); form.resetFields(); setIsModalOpen(true); }} />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingCategory(null); form.resetFields(); setMainImage(''); setIsModalOpen(true); }} />
           <Button type="primary" danger icon={<DeleteOutlined />} />
         </Space>
       </div>
@@ -172,6 +189,13 @@ const CategoriesPage: React.FC = () => {
         <Form form={form} layout="vertical">
           <Form.Item name="name" label="分类名称" rules={[{ required: true, message: '请输入分类名称' }]}>
             <Input />
+          </Form.Item>
+          <Form.Item label="分类图标/图片">
+             <ImageUpload 
+                value={mainImage ? [mainImage] : []}
+                onChange={(urls) => setMainImage(urls[0] || '')}
+                maxCount={1}
+             />
           </Form.Item>
           <Form.Item name="parentId" label="父级分类">
             <TreeSelect

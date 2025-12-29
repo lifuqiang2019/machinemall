@@ -25,17 +25,18 @@ const BANNERS = [
     }
 ];
 
-const Hero = () => {
+const Hero = ({ slides }: { slides?: any[] }) => {
+    const activeSlides = slides && slides.length > 0 ? slides : BANNERS;
     const [currentSlide, setCurrentSlide] = useState(0);
     const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
     const nextSlide = useCallback(() => {
-        setCurrentSlide((prev) => (prev + 1) % BANNERS.length);
-    }, []);
+        setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
+    }, [activeSlides.length]);
 
     const prevSlide = useCallback(() => {
-        setCurrentSlide((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
-    }, []);
+        setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+    }, [activeSlides.length]);
 
     useEffect(() => {
         const timer = setInterval(nextSlide, 5000);
@@ -98,48 +99,62 @@ const Hero = () => {
                 </div>
 
                 {/* Main Carousel Banner */}
-                <div className="flex-1 h-[450px] relative overflow-hidden group">
-                    <div className="absolute inset-0 z-0">
-                        {BANNERS.map((banner, index) => (
-                            <div
-                                key={banner.id}
-                                className={`absolute inset-0 flex items-center px-[50px] bg-cover bg-center transition-opacity duration-700 ease-in-out ${index === currentSlide ? "opacity-100 z-[2]" : "opacity-0 z-[1]"}`}
-                                style={{ backgroundImage: `url('${banner.bg}')` }}
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.5)] to-transparent z-0"></div>
-                                <div className="relative z-[3]">
-                                    <h1 className="text-white text-[42px] leading-[1.2] mb-5 font-bold hero-banner-heading">
-                                        {banner.title.split('\n').map((line, i) => (
-                                            <React.Fragment key={i}>
-                                                {line}
-                                                <br />
-                                            </React.Fragment>
-                                        ))}
-                                    </h1>
-                                    <p className="text-white text-[18px] opacity-90 mb-8">{banner.text}</p>
-                                    <button className="bg-primary text-white py-[12px] px-[35px] border-none rounded-[5px] font-semibold cursor-pointer transition-all hover:bg-primary-hover active:scale-95">
-                                        Explore Now
-                                    </button>
-                                </div>
+                <div className="flex-1 relative h-[450px] overflow-hidden group">
+                    {activeSlides.map((banner, index) => (
+                        <div
+                            key={banner.id || index}
+                            className={`absolute top-0 left-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+                                index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+                            }`}
+                        >
+                            <img
+                                src={banner.bg || banner.image}
+                                alt={banner.title}
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-0 left-0 w-full h-full bg-black/20" />
+                            <div className="absolute top-1/2 left-16 transform -translate-y-1/2 text-white z-20 max-w-[500px]">
+                                <h2 className="text-[42px] font-bold leading-tight mb-4 animate-fade-in-up">
+                                    {banner.title.split('\n').map((line: string, i: number) => (
+                                        <React.Fragment key={i}>
+                                            {line}
+                                            <br />
+                                        </React.Fragment>
+                                    ))}
+                                </h2>
+                                <p className="text-lg mb-8 text-gray-100 animate-fade-in-up delay-100">
+                                    {banner.text}
+                                </p>
+                                <button className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded text-sm font-semibold transition-all animate-fade-in-up delay-200 flex items-center gap-2">
+                                    Explore Now <ChevronRight size={16} />
+                                </button>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
 
-                    {/* Carousel Controls */}
-                    <button className="absolute top-1/2 -translate-y-1/2 left-5 bg-black/30 text-white border-none w-10 h-10 rounded-full flex items-center justify-center cursor-pointer z-10 hover:bg-black/60" onClick={prevSlide}>
-                        <ChevronLeft size={24} />
+                    {/* Controls */}
+                    <button
+                        onClick={prevSlide}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                        <ChevronLeft size={20} />
                     </button>
-                    <button className="absolute top-1/2 -translate-y-1/2 right-5 bg-black/30 text-white border-none w-10 h-10 rounded-full flex items-center justify-center cursor-pointer z-10 hover:bg-black/60" onClick={nextSlide}>
-                        <ChevronRight size={24} />
+                    <button
+                        onClick={nextSlide}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                        <ChevronRight size={20} />
                     </button>
 
-                    {/* Dots */}
-                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-[10px] z-10">
-                        {BANNERS.map((_, index) => (
+                    {/* Indicators */}
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                        {activeSlides.map((_, index) => (
                             <button
                                 key={index}
-                                className={`w-2.5 h-2.5 rounded-full border-none cursor-pointer transition-all ${index === currentSlide ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"}`}
                                 onClick={() => setCurrentSlide(index)}
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                    index === currentSlide ? "w-8 bg-primary" : "bg-white/50 hover:bg-white"
+                                }`}
                             />
                         ))}
                     </div>

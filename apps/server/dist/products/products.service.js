@@ -32,11 +32,23 @@ let ProductsService = class ProductsService {
     findAll(query = {}) {
         const where = {};
         if (query.categoryId) {
-            where.category = { id: query.categoryId };
+            const ids = query.categoryId.toString().split(',').map(id => +id);
+            where.category = { id: (0, typeorm_2.In)(ids) };
+        }
+        if (query.isFeatured) {
+            where.isFeatured = query.isFeatured === 'true';
+        }
+        const order = {};
+        if (query.sort === 'newest') {
+            order.createdAt = 'DESC';
+        }
+        else {
+            order.createdAt = 'DESC';
         }
         return this.productsRepository.find({
             where,
             relations: ['category'],
+            order,
             take: query.limit ? +query.limit : undefined
         });
     }

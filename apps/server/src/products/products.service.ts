@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -23,12 +23,25 @@ export class ProductsService {
   findAll(query: any = {}) {
     const where: any = {};
     if (query.categoryId) {
-        where.category = { id: query.categoryId };
+        const ids = query.categoryId.toString().split(',').map(id => +id);
+        where.category = { id: In(ids) };
+    }
+
+    if (query.isFeatured) {
+        where.isFeatured = query.isFeatured === 'true';
     }
     
+    const order: any = {};
+    if (query.sort === 'newest') {
+        order.createdAt = 'DESC';
+    } else {
+        order.createdAt = 'DESC'; // Default to newest
+    }
+
     return this.productsRepository.find({ 
         where,
         relations: ['category'],
+        order,
         take: query.limit ? +query.limit : undefined
     });
   }

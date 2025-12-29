@@ -12,17 +12,37 @@ interface Product {
 
 interface ProductSectionProps {
     title: string;
-    categoryId?: number;
+    categoryIds?: number[];
+    type?: 'new_arrivals' | 'featured' | 'default';
     initialProducts?: Product[];
 }
 
-const ProductSection = async ({ title, categoryId, initialProducts }: ProductSectionProps) => {
+const ProductSection = async ({ title, categoryIds, type, initialProducts }: ProductSectionProps) => {
     let products = initialProducts || [];
 
-    if (!initialProducts && categoryId) {
+    if (!initialProducts) {
+        let queryParams = new URLSearchParams();
+        queryParams.append('limit', '8');
+
+        // Apply type-specific default filters
+        if (type === 'new_arrivals') {
+            queryParams.append('sort', 'newest');
+        } else if (type === 'featured') {
+            queryParams.append('isFeatured', 'true');
+        }
+
+        // Apply category filter if present (can be combined with type filters)
+        if (categoryIds && categoryIds.length > 0) {
+            queryParams.append('categoryId', categoryIds.join(','));
+        }
+
+        const queryString = queryParams.toString();
+        
+        // Fetch if we have any criteria or if it's a generic product section (which might show all products if no cat is selected, but usually we want some filter)
+        // For now, let's allow fetching even if just limit is set (shows random/first 8 products)
         try {
             // Server Component Data Fetching
-            const res = await fetch(`http://localhost:3000/products?categoryId=${categoryId}&limit=8`, {
+            const res = await fetch(`http://localhost:3000/products?${queryString}`, {
                 next: { revalidate: 60 } // Revalidate every 60 seconds
             });
             if (res.ok) {

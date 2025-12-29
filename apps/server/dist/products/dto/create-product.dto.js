@@ -9,6 +9,7 @@ class CreateProductDto {
     categoryId;
     images;
     mainImage;
+    isFeatured;
     details;
 }
 exports.CreateProductDto = CreateProductDto;

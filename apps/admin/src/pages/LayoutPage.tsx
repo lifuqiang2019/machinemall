@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber, Switch, Space, message, Card, TreeSelect, Popconfirm, Select, Tag } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import HeroSlidesEditor from '../components/HeroSlidesEditor';
 
 interface LayoutItem {
   id: number;
   name: string;
   order: number;
   isActive: boolean;
-  categoryId: number;
-  category?: {
+  categories?: {
+      id: number;
       name: string;
-  };
+  }[];
 }
 
 const LayoutPage: React.FC = () => {
+  const { SHOW_ALL } = TreeSelect;
   const [layouts, setLayouts] = useState<LayoutItem[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,6 +28,28 @@ const LayoutPage: React.FC = () => {
     fetchLayouts();
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+        if (editingItem) {
+            const formData = {
+                ...editingItem,
+                type: editingItem.type || 'product_section',
+                // Transform to { label, value } for treeCheckStrictly
+                categoryIds: editingItem.categories?.map(c => ({ label: c.name, value: c.id })) || []
+            };
+            form.setFieldsValue(formData);
+        } else {
+            form.resetFields();
+            // 设置默认值
+            form.setFieldsValue({
+                isActive: true,
+                order: 0,
+                type: 'product_section' 
+            });
+        }
+    }
+  }, [isModalOpen, editingItem, form]);
 
   const fetchLayouts = async () => {
     setLoading(true);
@@ -51,11 +75,16 @@ const LayoutPage: React.FC = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      
+      // Transform { label, value }[] back to id[]
+      const categoryIds = values.categoryIds?.map((item: any) => item.value) || [];
+      const payload = { ...values, categoryIds };
+
       if (editingItem) {
-        await axios.patch(`http://localhost:3000/layout/${editingItem.id}`, values);
+        await axios.patch(`http://localhost:3000/layout/${editingItem.id}`, payload);
         message.success('更新成功');
       } else {
-        await axios.post('http://localhost:3000/layout', values);
+        await axios.post('http://localhost:3000/layout', payload);
         message.success('创建成功');
       }
       setIsModalOpen(false);
@@ -80,15 +109,6 @@ const LayoutPage: React.FC = () => {
 
   const handleEdit = (record: LayoutItem) => {
     setEditingItem(record);
-    // Explicitly set categoryId from relation object if needed, though record.categoryId should be present
-    // TypeORM usually returns relation object but maybe not the foreign key column if not explicitly selected?
-    // Let's ensure we use the relation's ID if available.
-    const formData = {
-        ...record,
-        type: record.type || 'product_section', // Ensure type has a default
-        categoryId: record.category?.id || record.categoryId
-    };
-    form.setFieldsValue(formData);
     setIsModalOpen(true);
   };
 
@@ -117,9 +137,15 @@ const LayoutPage: React.FC = () => {
     },
     {
       title: '关联分类',
-      dataIndex: ['category', 'name'],
-      key: 'category',
-      render: (text: string, record: LayoutItem) => record.type === 'product_section' ? (text || '未关联') : '-',
+      key: 'categories',
+      render: (_: any, record: LayoutItem) => {
+          const categories = record.categories || [];
+          if (['product_section', 'featured_products', 'new_arrivals'].includes(record.type)) {
+             if (categories.length === 0) return '未关联 (显示所有)';
+             return categories.map(c => c.name).join(', ');
+          }
+          return '-';
+      },
     },
     {
       title: '排序',
@@ -150,7 +176,7 @@ const LayoutPage: React.FC = () => {
     <div>
       <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
         <h2>首页布局管理</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingItem(null); form.resetFields(); setIsModalOpen(true); }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingItem(null); setIsModalOpen(true); }}>
           添加模块
         </Button>
       </div>
@@ -171,22 +197,43 @@ const LayoutPage: React.FC = () => {
           </Form.Item>
           <Form.Item name="type" label="模块类型" rules={[{ required: true }]}>
              <Select onChange={() => {}}>
-                 <Select.Option value="product_section">商品楼层 (展示分类商品)</Select.Option>
                  <Select.Option value="hero">首页轮播 (顶部大图)</Select.Option>
+                 <Select.Option value="category_bar">分类导航 (图标导航栏)</Select.Option>
+                 <Select.Option value="product_section">商品楼层 (展示分类商品)</Select.Option>
+                 <Select.Option value="featured_products">推荐商品 (展示Featured商品)</Select.Option>
+                 <Select.Option value="new_arrivals">新品上市 (展示最新商品)</Select.Option>
              </Select>
           </Form.Item>
 
           <Form.Item noStyle shouldUpdate={(prev, curr) => prev.type !== curr.type}>
             {({ getFieldValue }) => {
-              return getFieldValue('type') === 'product_section' ? (
-                  <Form.Item name="categoryId" label="关联分类" rules={[{ required: true }]}>
-                    <TreeSelect
-                        treeData={renderTreeNodes(categories)}
-                        placeholder="选择分类"
-                        treeDefaultExpandAll
-                    />
-                  </Form.Item>
-              ) : null;
+              const type = getFieldValue('type');
+              
+              if (['product_section', 'featured_products', 'new_arrivals', 'category_bar'].includes(type)) {
+                  return (
+                      <Form.Item name="categoryIds" label="关联分类 (可选，不选则显示所有)" rules={[{ required: false }]}>
+                        <TreeSelect
+                            treeData={renderTreeNodes(categories)}
+                            placeholder="选择分类"
+                            treeDefaultExpandAll
+                            multiple
+                            treeCheckable
+                            treeCheckStrictly={true}
+                            showCheckedStrategy={SHOW_ALL}
+                        />
+                      </Form.Item>
+                  );
+              }
+
+              if (type === 'hero') {
+                  return (
+                    <Form.Item label="轮播图片配置" name={['config', 'slides']}>
+                        <HeroSlidesEditor />
+                    </Form.Item>
+                  );
+              }
+              
+              return null;
             }}
           </Form.Item>
           <Form.Item name="order" label="排序 (越小越靠前)">

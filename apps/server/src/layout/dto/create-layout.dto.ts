@@ -3,5 +3,6 @@ export class CreateLayoutDto {
   type?: string;
   order?: number;
   isActive?: boolean;
-  categoryId?: number | null;
+  categoryIds?: number[];
+  config?: any;
 }

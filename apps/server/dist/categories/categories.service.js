@@ -26,6 +26,7 @@ let CategoriesService = class CategoriesService {
         const category = new category_entity_1.Category();
         category.name = createCategoryDto.name;
         category.description = createCategoryDto.description || '';
+        category.image = createCategoryDto.image || '';
         if (createCategoryDto.parentId) {
             const parent = await this.categoriesRepository.findOneBy({ id: createCategoryDto.parentId });
             if (parent) {
@@ -50,11 +51,13 @@ let CategoriesService = class CategoriesService {
         });
     }
     async update(id, updateCategoryDto) {
+        console.log(`[Backend Service] Update payload for ${id}:`, updateCategoryDto);
         const category = await this.categoriesRepository.findOneBy({ id });
         if (!category)
             return null;
         category.name = updateCategoryDto.name ?? category.name;
         category.description = updateCategoryDto.description ?? category.description;
+        category.image = updateCategoryDto.image ?? category.image;
         if (updateCategoryDto.parentId) {
             const parent = await this.categoriesRepository.findOneBy({ id: updateCategoryDto.parentId });
             if (parent) {
@@ -64,6 +67,7 @@ let CategoriesService = class CategoriesService {
         else if (updateCategoryDto.parentId === null) {
             category.parent = null;
         }
+        console.log(`[Backend Service] Saving category:`, category);
         return this.categoriesRepository.save(category);
     }
     remove(id) {

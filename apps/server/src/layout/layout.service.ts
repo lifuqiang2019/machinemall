@@ -12,32 +12,47 @@ export class LayoutService {
     private layoutRepository: Repository<Layout>,
   ) {}
 
-  create(createLayoutDto: CreateLayoutDto) {
-    // Cast to any to bypass strict type check for null/undefined mismatch in DeepPartial
-    const layout = this.layoutRepository.create(createLayoutDto as any);
+  async create(createLayoutDto: CreateLayoutDto) {
+    const { categoryIds, ...rest } = createLayoutDto;
+    const layout = this.layoutRepository.create(rest);
+    if (categoryIds && categoryIds.length > 0) {
+      layout.categories = categoryIds.map((id) => ({ id } as any));
+    }
     return this.layoutRepository.save(layout);
   }
 
   findAll() {
     return this.layoutRepository.find({
       order: { order: 'ASC' },
-      relations: ['category'],
+      relations: ['categories'],
     });
   }
 
   findOne(id: number) {
     return this.layoutRepository.findOne({
       where: { id },
-      relations: ['category'],
+      relations: ['categories'],
     });
   }
 
   async update(id: number, updateLayoutDto: UpdateLayoutDto) {
-    // Handle categoryId explicitly if it's meant to be cleared
-    if (updateLayoutDto.type !== 'product_section') {
-        updateLayoutDto.categoryId = null;
+    const { categoryIds, ...rest } = updateLayoutDto;
+    const layout = await this.layoutRepository.findOne({
+      where: { id },
+      relations: ['categories'],
+    });
+    if (!layout) return null;
+
+    Object.assign(layout, rest);
+
+    const type = updateLayoutDto.type || layout.type;
+    if (type === 'hero') {
+      layout.categories = [];
+    } else if (categoryIds) {
+      layout.categories = categoryIds.map((id) => ({ id } as any));
     }
-    return this.layoutRepository.update(id, updateLayoutDto as any);
+
+    return this.layoutRepository.save(layout);
   }
 
   remove(id: number) {

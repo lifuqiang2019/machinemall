@@ -6,5 +6,6 @@ export declare class CreateProductDto {
     categoryId?: number;
     images?: string[];
     mainImage?: string;
+    isFeatured?: boolean;
     details?: any;
 }

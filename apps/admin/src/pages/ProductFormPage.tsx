@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Button, Card, message, Select, TreeSelect, Space, Row, Col, Radio } from 'antd';
+import { Form, Input, InputNumber, Button, Card, message, Select, TreeSelect, Space, Row, Col, Radio, Switch } from 'antd';
 import { SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -200,6 +200,9 @@ const ProductFormPage: React.FC = () => {
                         </Form.Item>
                         <Form.Item name="stock" label="库存" rules={[{ required: true }]}>
                             <InputNumber style={{ width: '100%' }} min={0} />
+                        </Form.Item>
+                        <Form.Item name="isFeatured" label="推荐商品" valuePropName="checked">
+                            <Switch />
                         </Form.Item>
                         <Form.Item name="category" label="分类">
                             <TreeSelect

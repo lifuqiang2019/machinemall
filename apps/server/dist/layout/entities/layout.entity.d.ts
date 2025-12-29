@@ -5,6 +5,6 @@ export declare class Layout {
     type: string;
     order: number;
     isActive: boolean;
-    categoryId: number;
-    category: Category;
+    config: any;
+    categories: Category[];
 }

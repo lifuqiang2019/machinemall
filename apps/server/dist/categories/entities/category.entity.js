@@ -16,6 +16,7 @@ let Category = class Category {
     id;
     name;
     description;
+    image;
     children;
     parent;
     products;
@@ -35,6 +36,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Category.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Category.prototype, "image", void 0);
 __decorate([
     (0, typeorm_1.TreeChildren)(),
     __metadata("design:type", Array)

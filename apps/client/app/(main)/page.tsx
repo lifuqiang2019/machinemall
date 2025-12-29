@@ -36,13 +36,17 @@ export default async function Home() {
   return (
     <>
       {/* <Hero />  <-- Removed static hero to rely on dynamic layout */}
-      <CategoryBar />
+      {/* <CategoryBar /> <-- Removed static category bar */}
       <div style={{ backgroundColor: "var(--white)" }}>
         {layoutModules.map((module: any) => {
             if (!module.isActive) return null;
 
             if (module.type === 'hero') {
-                return <Hero key={module.id} />;
+                return <Hero key={module.id} slides={module.config?.slides} />;
+            }
+
+            if (module.type === 'category_bar') {
+                return <CategoryBar key={module.id} categories={module.categories} />;
             }
             
             if (module.type === 'product_section') {
@@ -50,7 +54,29 @@ export default async function Home() {
                     <ProductSection 
                         key={module.id} 
                         title={module.name} 
-                        categoryId={module.categoryId}
+                        categoryIds={module.categories?.map((c: any) => c.id)}
+                    />
+                );
+            }
+
+            if (module.type === 'featured_products') {
+                return (
+                    <ProductSection 
+                        key={module.id} 
+                        title={module.name} 
+                        type="featured"
+                        categoryIds={module.categories?.map((c: any) => c.id)}
+                    />
+                );
+            }
+
+            if (module.type === 'new_arrivals') {
+                return (
+                    <ProductSection 
+                        key={module.id} 
+                        title={module.name} 
+                        type="new_arrivals"
+                        categoryIds={module.categories?.map((c: any) => c.id)}
                     />
                 );
             }

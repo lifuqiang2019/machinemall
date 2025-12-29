@@ -29,6 +29,7 @@ export class CategoriesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+    console.log(`[Backend] Updating category ${id} with data:`, updateCategoryDto);
     return this.categoriesService.update(+id, updateCategoryDto);
   }
 

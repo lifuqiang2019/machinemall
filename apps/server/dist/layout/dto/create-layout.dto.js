@@ -6,7 +6,8 @@ class CreateLayoutDto {
     type;
     order;
     isActive;
-    categoryId;
+    categoryIds;
+    config;
 }
 exports.CreateLayoutDto = CreateLayoutDto;
 //# sourceMappingURL=create-layout.dto.js.map

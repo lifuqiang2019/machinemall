@@ -18,8 +18,8 @@ let Layout = class Layout {
     type;
     order;
     isActive;
-    categoryId;
-    category;
+    config;
+    categories;
 };
 exports.Layout = Layout;
 __decorate([
@@ -43,14 +43,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Layout.prototype, "isActive", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
-], Layout.prototype, "categoryId", void 0);
+    (0, typeorm_1.Column)('simple-json', { nullable: true }),
+    __metadata("design:type", Object)
+], Layout.prototype, "config", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => category_entity_1.Category),
-    (0, typeorm_1.JoinColumn)({ name: 'categoryId' }),
-    __metadata("design:type", category_entity_1.Category)
-], Layout.prototype, "category", void 0);
+    (0, typeorm_1.ManyToMany)(() => category_entity_1.Category),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], Layout.prototype, "categories", void 0);
 exports.Layout = Layout = __decorate([
     (0, typeorm_1.Entity)()
 ], Layout);

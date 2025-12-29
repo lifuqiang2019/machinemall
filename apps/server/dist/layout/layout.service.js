@@ -22,27 +22,43 @@ let LayoutService = class LayoutService {
     constructor(layoutRepository) {
         this.layoutRepository = layoutRepository;
     }
-    create(createLayoutDto) {
-        const layout = this.layoutRepository.create(createLayoutDto);
+    async create(createLayoutDto) {
+        const { categoryIds, ...rest } = createLayoutDto;
+        const layout = this.layoutRepository.create(rest);
+        if (categoryIds && categoryIds.length > 0) {
+            layout.categories = categoryIds.map((id) => ({ id }));
+        }
         return this.layoutRepository.save(layout);
     }
     findAll() {
         return this.layoutRepository.find({
             order: { order: 'ASC' },
-            relations: ['category'],
+            relations: ['categories'],
         });
     }
     findOne(id) {
         return this.layoutRepository.findOne({
             where: { id },
-            relations: ['category'],
+            relations: ['categories'],
         });
     }
     async update(id, updateLayoutDto) {
-        if (updateLayoutDto.type !== 'product_section') {
-            updateLayoutDto.categoryId = null;
+        const { categoryIds, ...rest } = updateLayoutDto;
+        const layout = await this.layoutRepository.findOne({
+            where: { id },
+            relations: ['categories'],
+        });
+        if (!layout)
+            return null;
+        Object.assign(layout, rest);
+        const type = updateLayoutDto.type || layout.type;
+        if (type === 'hero') {
+            layout.categories = [];
         }
-        return this.layoutRepository.update(id, updateLayoutDto);
+        else if (categoryIds) {
+            layout.categories = categoryIds.map((id) => ({ id }));
+        }
+        return this.layoutRepository.save(layout);
     }
     remove(id) {
         return this.layoutRepository.delete(id);
