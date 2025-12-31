@@ -2,32 +2,84 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Github, Mail, Lock, User, Eye, EyeOff, Loader2, CheckCircle2, Award, Briefcase } from "lucide-react";
+import { Github, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, Award, ShieldCheck } from "lucide-react";
 
 export default function RegisterPage() {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(""); // Add success state
 
     // Form state
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
+    const [verificationCode, setVerificationCode] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    
+    // Timer state
+    const [timer, setTimer] = useState(0);
+
+    const handleSendCode = () => {
+        if (!email) {
+            setError("Please enter email address");
+            return;
+        }
+        // Email Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("Please enter a valid email address");
+            return;
+        }
+        
+        setError("");
+        // Start Mock Timer
+        setTimer(60);
+        const interval = setInterval(() => {
+            setTimer((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
+        // Basic Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("Please enter a valid email address");
+            setIsLoading(false);
+            return;
+        }
+
+        if (!verificationCode) {
+            setError("Please enter verification code");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             await authClient.signUp.email({
                 email,
                 password,
-                name,
+                name: email.split("@")[0], // Auto-fill name
                 callbackURL: "/"
             }, {
                 onError: (ctx) => setError(ctx.error.message || "Registration failed"),
+                onSuccess: () => {
+                    setSuccess("Registration successful! Redirecting...");
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 2000);
+                }
             });
         } catch (err) {
             setError("An unexpected error occurred");
@@ -120,9 +172,16 @@ export default function RegisterPage() {
 
                     <div className="bg-white p-10 md:p-12 rounded-xl shadow-[0_20px_80px_rgba(0,0,0,0.06)] border border-gray-100">
                         <div className="mb-10 text-center lg:text-left">
-                            <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+                            <h2 className="text-3xl font-bold text-gray-900">Register</h2>
                             <p className="text-gray-500 mt-3 font-medium">Join our global professional network</p>
                         </div>
+
+                        {success && (
+                            <div className="bg-green-50 text-green-600 px-5 py-4 rounded-xl mb-8 text-sm border border-green-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                                <CheckCircle2 className="w-5 h-5" />
+                                {success}
+                            </div>
+                        )}
 
                         {error && (
                             <div className="bg-red-50 text-red-600 px-5 py-4 rounded-xl mb-8 text-sm border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
@@ -132,21 +191,7 @@ export default function RegisterPage() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-2">
-                                <label className="text-[13px] font-bold text-gray-700 ml-1 uppercase tracking-widest">Full Name</label>
-                                <div className="relative group/field">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within/field:text-primary transition-colors" size={20} />
-                                    <input
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        placeholder="Your full name"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
+                            {/* Email Field */}
                             <div className="space-y-2">
                                 <label className="text-[13px] font-bold text-gray-700 ml-1 uppercase tracking-widest">Email Address</label>
                                 <div className="relative group/field">
@@ -162,6 +207,33 @@ export default function RegisterPage() {
                                 </div>
                             </div>
 
+                            {/* Verification Code Field */}
+                            <div className="space-y-2">
+                                <label className="text-[13px] font-bold text-gray-700 ml-1 uppercase tracking-widest">Verification Code</label>
+                                <div className="flex gap-3">
+                                    <div className="relative group/field flex-1">
+                                        <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within/field:text-primary transition-colors" size={20} />
+                                        <input
+                                            type="text"
+                                            value={verificationCode}
+                                            onChange={(e) => setVerificationCode(e.target.value)}
+                                            placeholder="Enter 6-digit code"
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all text-[15px] placeholder:text-gray-300"
+                                            required
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleSendCode}
+                                        disabled={timer > 0}
+                                        className="px-6 py-4 bg-white border border-gray-200 text-primary font-bold rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-w-[120px]"
+                                    >
+                                        {timer > 0 ? `${timer}s` : "Send Code"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Password Field */}
                             <div className="space-y-2">
                                 <label className="text-[13px] font-bold text-gray-700 ml-1 uppercase tracking-widest">Password</label>
                                 <div className="relative group/field">
@@ -198,21 +270,23 @@ export default function RegisterPage() {
                                 <div className="w-full border-t border-gray-100"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase tracking-[0.2em]">
-                                <span className="px-6 bg-white text-gray-400 font-black">Quick Join</span>
+                                <span className="px-6 bg-white text-gray-400 font-black">Social Connect</span>
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => handleSocialLogin("github")}
-                            className="w-full flex items-center justify-center gap-3 px-4 py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-bold text-gray-700 active:scale-[0.98] group"
-                        >
-                            <Github size={22} />
-                            <span>Continue with GitHub</span>
-                        </button>
+                        <div className="grid grid-cols-1 gap-4">
+                            <button
+                                onClick={() => handleSocialLogin("github")}
+                                className="w-full flex items-center justify-center gap-3 px-4 py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-bold text-gray-700 active:scale-[0.98] group"
+                            >
+                                <Github size={22} className="group-hover:rotate-12 transition-transform" />
+                                <span>Continue with GitHub</span>
+                            </button>
+                        </div>
 
-                        <p className="text-center mt-8 text-gray-500 font-medium text-sm">
+                        <p className="text-center mt-10 text-gray-500 font-medium">
                             Already have an account?{" "}
-                            <Link href="/login" className="text-primary font-bold hover:underline decoration-2 underline-offset-4">
+                            <Link href="/login" replace className="text-primary font-bold hover:underline decoration-2 underline-offset-4">
                                 Sign In
                             </Link>
                         </p>

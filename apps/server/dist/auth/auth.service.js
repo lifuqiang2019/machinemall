@@ -54,21 +54,26 @@ let AuthService = class AuthService {
         this.usersService = usersService;
         this.jwtService = jwtService;
     }
-    async validateUser(username, pass) {
-        const user = await this.usersService.findByUsername(username);
+    async validateUser(email, pass) {
+        const user = await this.usersService.findByEmail(email);
+        console.log(`[AuthService] Validating user: ${email}`, user ? 'Found' : 'Not Found');
         if (user && user.password) {
-            if (user.password === pass)
+            if (user.password === pass) {
+                console.log('[AuthService] Password matched (plain text)');
                 return { ...user };
+            }
             const isMatch = await bcrypt.compare(pass, user.password);
+            console.log(`[AuthService] Password match (bcrypt): ${isMatch}`);
             if (isMatch) {
                 const { password, ...result } = user;
                 return result;
             }
         }
+        console.log('[AuthService] Validation failed');
         return null;
     }
     async login(user) {
-        const payload = { username: user.username, sub: user.id, role: user.role };
+        const payload = { email: user.email, sub: user.id, role: user.role };
         return {
             access_token: this.jwtService.sign(payload),
         };

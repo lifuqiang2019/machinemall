@@ -9,11 +9,24 @@ const LoginPage: React.FC = () => {
 
   const onFinish = async (values: any) => {
     try {
-      const response = await axios.post('http://localhost:3000/auth/login', values);
+      // Assuming backend runs on 3000, but if Next.js took 3000, backend might be on 3001 or vice versa.
+      // From logs: Next.js started on 3001 because 3000 was in use. 
+      // This implies 3000 is likely the NestJS backend (or something else).
+      // However, usually NestJS runs on 3000 by default.
+      // If user says "default admin created", it means backend is running.
+      
+      // Let's try 3000 first, but user says "request changed". 
+      // If Next.js is on 3001, maybe backend is on 3000.
+      
+      const response = await axios.post('http://localhost:3000/auth/login', {
+          email: values.username, // NestJS expects 'email', but Form has 'username'
+          password: values.password
+      });
       localStorage.setItem('token', response.data.access_token);
       message.success('Login successful');
       navigate('/users');
     } catch (error) {
+      console.error(error);
       message.error('Invalid username or password');
     }
   };

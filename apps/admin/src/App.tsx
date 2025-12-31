@@ -6,7 +6,10 @@ import CategoriesPage from './pages/CategoriesPage';
 import ProductsPage from './pages/ProductsPage';
 import ProductFormPage from './pages/ProductFormPage';
 import LayoutPage from './pages/LayoutPage';
+import ChatPage from './pages/ChatPage';
 import LoginPage from './pages/LoginPage';
+
+import { SocketProvider } from './contexts/SocketContext';
 
 // Simple Auth Guard
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -22,11 +25,12 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route path="/" element={<ProtectedRoute><SocketProvider><AppLayout /></SocketProvider></ProtectedRoute>}>
           <Route index element={<Navigate to="/users" replace />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="layout" element={<LayoutPage />} />
+          <Route path="chat" element={<ChatPage />} />
           <Route path="products">
             <Route index element={<ProductsPage />} />
             <Route path="add" element={<ProductFormPage />} />

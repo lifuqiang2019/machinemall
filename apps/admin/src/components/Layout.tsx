@@ -1,7 +1,9 @@
 import React from 'react';
 import { Layout, Menu, theme, Dropdown, Avatar, Space, Button, Breadcrumb } from 'antd';
-import { UserOutlined, AppstoreOutlined, ShoppingOutlined, LogoutOutlined, MenuUnfoldOutlined, MenuFoldOutlined, BellOutlined, HomeOutlined, LayoutOutlined } from '@ant-design/icons';
+import { UserOutlined, AppstoreOutlined, ShoppingOutlined, LogoutOutlined, MenuUnfoldOutlined, MenuFoldOutlined, BellOutlined, HomeOutlined, LayoutOutlined, MessageOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Badge } from 'antd';
+import { useSocket } from '../contexts/SocketContext';
 
 const { Header, Content, Sider } = Layout;
 
@@ -12,6 +14,7 @@ const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = React.useState(false);
+  const { unreadCount, isConnected } = useSocket();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -51,6 +54,11 @@ const AppLayout: React.FC = () => {
       icon: <LayoutOutlined />,
       label: '布局管理',
     },
+    {
+      key: '/chat',
+      icon: <MessageOutlined />,
+      label: '客服管理',
+    },
   ];
 
   const breadcrumbNameMap: Record<string, string> = {
@@ -60,6 +68,7 @@ const AppLayout: React.FC = () => {
     '/products/add': '添加商品',
     '/products/edit': '编辑商品',
     '/layout': '布局管理',
+    '/chat': '客服管理',
   };
 
   const pathSnippets = location.pathname.split('/').filter((i) => i);

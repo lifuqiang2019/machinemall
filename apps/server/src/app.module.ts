@@ -9,6 +9,7 @@ import { ProductsModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { LayoutModule } from './layout/layout.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { LayoutModule } from './layout/layout.module';
     AuthModule,
     UploadModule,
     LayoutModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

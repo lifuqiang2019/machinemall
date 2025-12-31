@@ -51,13 +51,31 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = __importStar(require("bcrypt"));
+const uuid_1 = require("uuid");
 let UsersService = class UsersService {
     usersRepository;
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
+    async onModuleInit() {
+        const adminEmail = 'admin';
+        const admin = await this.usersRepository.findOneBy({ email: adminEmail });
+        if (!admin) {
+            console.log('Seeding admin user...');
+            const adminUser = new user_entity_1.User();
+            adminUser.id = (0, uuid_1.v4)();
+            adminUser.email = adminEmail;
+            adminUser.name = 'Admin';
+            adminUser.role = 'admin';
+            adminUser.password = await bcrypt.hash('admin', 10);
+            adminUser.emailVerified = true;
+            await this.usersRepository.save(adminUser);
+            console.log('Admin user created: admin/admin');
+        }
+    }
     async create(createUserDto) {
         const user = this.usersRepository.create(createUserDto);
+        user.id = (0, uuid_1.v4)();
         if (user.password) {
             user.password = await bcrypt.hash(user.password, 10);
         }
@@ -69,8 +87,8 @@ let UsersService = class UsersService {
     findOne(id) {
         return this.usersRepository.findOneBy({ id });
     }
-    findByUsername(username) {
-        return this.usersRepository.findOneBy({ username });
+    findByEmail(email) {
+        return this.usersRepository.findOneBy({ email });
     }
     async update(id, updateUserDto) {
         if (updateUserDto.password) {

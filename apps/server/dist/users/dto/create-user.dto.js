@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserDto = void 0;
 class CreateUserDto {
-    username;
+    email;
+    name;
     password;
     role;
 }

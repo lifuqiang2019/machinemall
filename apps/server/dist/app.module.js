@@ -18,6 +18,7 @@ const products_module_1 = require("./products/products.module");
 const auth_module_1 = require("./auth/auth.module");
 const upload_module_1 = require("./upload/upload.module");
 const layout_module_1 = require("./layout/layout.module");
+const chat_module_1 = require("./chat/chat.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -47,6 +48,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             upload_module_1.UploadModule,
             layout_module_1.LayoutModule,
+            chat_module_1.ChatModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

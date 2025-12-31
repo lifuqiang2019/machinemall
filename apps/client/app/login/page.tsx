@@ -196,8 +196,8 @@ export default function LoginPage() {
 
                         <p className="text-center mt-10 text-gray-500 font-medium">
                             Don&apos;t have an account?{" "}
-                            <Link href="/register" className="text-primary font-bold hover:underline decoration-2 underline-offset-4">
-                                Join Machmall free
+                            <Link href="/register" replace className="text-primary font-bold hover:underline decoration-2 underline-offset-4">
+                                Register
                             </Link>
                         </p>
                     </div>

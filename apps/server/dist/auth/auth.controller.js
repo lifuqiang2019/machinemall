@@ -21,7 +21,7 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(loginDto) {
-        const user = await this.authService.validateUser(loginDto.username, loginDto.password);
+        const user = await this.authService.validateUser(loginDto.email, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException();
         }

@@ -4,8 +4,9 @@ import { PlusOutlined, DeleteOutlined, FilterOutlined, EditOutlined } from '@ant
 import axios from 'axios';
 
 interface User {
-  id: number;
+  id: string;
   username: string;
+  email: string;
   role: string;
   createdAt: string;
 }
@@ -16,6 +17,8 @@ const UsersPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form] = Form.useForm();
+  // ... (rest is fine until columns)
+
 
   useEffect(() => {
     fetchUsers();
@@ -62,7 +65,7 @@ const UsersPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await axios.delete(`http://localhost:3000/users/${id}`);
       message.success('用户删除成功');
@@ -77,12 +80,17 @@ const UsersPage: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 50,
+      width: 150,
     },
     {
-      title: '用户名',
-      dataIndex: 'username',
-      key: 'username',
+      title: '姓名',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '邮箱',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
       title: '角色',
@@ -143,8 +151,8 @@ const UsersPage: React.FC = () => {
                 <Card title="筛选" bordered={false} style={{ boxShadow: '0 1px 4px rgba(0,21,41,.08)' }}>
                     <Space direction="vertical" style={{ width: '100%' }} size="large">
                         <div>
-                            <div style={{ marginBottom: 8 }}>用户名</div>
-                            <Input placeholder="用户名" />
+                            <div style={{ marginBottom: 8 }}>姓名/邮箱</div>
+                            <Input placeholder="请输入姓名或邮箱" />
                         </div>
                         <div>
                             <div style={{ marginBottom: 8 }}>用户组</div>
@@ -179,11 +187,14 @@ const UsersPage: React.FC = () => {
             onCancel={() => setIsModalOpen(false)}
         >
             <Form form={form} layout="vertical">
-                <Form.Item name="username" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
+                <Form.Item name="email" label="邮箱" rules={[{ required: true, message: '请输入邮箱' }]}>
+                    <Input />
+                </Form.Item>
+                <Form.Item name="name" label="姓名" rules={[{ required: true, message: '请输入姓名' }]}>
                     <Input />
                 </Form.Item>
                 <Form.Item 
-                    name="password" 
+                    name="password"  
                     label="密码" 
                     rules={[{ required: !editingUser, message: '请输入密码' }]}
                     extra={editingUser ? "如果不修改密码请留空" : ""}
