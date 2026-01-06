@@ -15,6 +15,10 @@ const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const jwt_strategy_1 = require("./jwt.strategy");
+const email_module_1 = require("../email/email.module");
+const better_auth_controller_1 = require("./better-auth.controller");
+const typeorm_1 = require("@nestjs/typeorm");
+const verification_code_entity_1 = require("./entities/verification-code.entity");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -23,6 +27,8 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             users_module_1.UsersModule,
             passport_1.PassportModule,
+            email_module_1.EmailModule,
+            typeorm_1.TypeOrmModule.forFeature([verification_code_entity_1.VerificationCode]),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
@@ -32,7 +38,7 @@ exports.AuthModule = AuthModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
         ],
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, better_auth_controller_1.BetterAuthController],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
         exports: [auth_service_1.AuthService],
     })

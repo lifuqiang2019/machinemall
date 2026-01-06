@@ -62,4 +62,20 @@ export class UsersService implements OnModuleInit {
   remove(id: string) {
     return this.usersRepository.delete(id);
   }
+
+  async setVerificationCode(id: string, code: string, expires: Date) {
+    return this.usersRepository.update(id, {
+      verificationCode: code,
+      verificationCodeExpires: expires,
+    });
+  }
+
+  async verifyAndRegister(id: string, hash: string) {
+    return this.usersRepository.update(id, {
+      password: hash,
+      emailVerified: true,
+      verificationCode: null,
+      verificationCodeExpires: null,
+    });
+  }
 }

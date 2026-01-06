@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Github, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, ShieldCheck, Zap, Globe } from "lucide-react";
 
 export default function LoginPage() {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -26,9 +28,13 @@ export default function LoginPage() {
                 callbackURL: "/"
             }, {
                 onError: (ctx) => setError(ctx.error.message || "Sign in failed"),
+                onSuccess: () => {
+                    // Better auth handles session automatically
+                    router.push("/");
+                }
             });
-        } catch (err) {
-            setError("An unexpected error occurred");
+        } catch (err: any) {
+            setError(err.message || "An unexpected error occurred");
         } finally {
             setIsLoading(false);
         }

@@ -13,4 +13,14 @@ export class AuthController {
     }
     return this.authService.login(user);
   }
+
+  @Post('send-code')
+  async sendCode(@Body() body: { email: string }) {
+    return this.authService.sendVerificationCode(body.email);
+  }
+
+  @Post('register')
+  async register(@Body() registerDto: any) {
+    return this.authService.register(registerDto);
+  }
 }

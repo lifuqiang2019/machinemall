@@ -6,6 +6,8 @@ export declare class User {
     role: string;
     image?: string;
     emailVerified: boolean;
+    verificationCode?: string | null;
+    verificationCodeExpires?: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -23,6 +23,12 @@ export class User {
   @Column({ name: 'email_verified', default: false })
   emailVerified: boolean;
 
+  @Column({ name: 'verification_code', nullable: true, type: 'varchar' })
+  verificationCode?: string | null; // Allow null to clear code after verification
+
+  @Column({ name: 'verification_code_expires', nullable: true, type: 'timestamp' })
+  verificationCodeExpires?: Date | null; // Allow null to clear expiry after verification
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

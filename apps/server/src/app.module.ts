@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { LayoutModule } from './layout/layout.module';
 import { ChatModule } from './chat/chat.module';
+import { EmailModule } from './email/email.module';
+import { BetterAuthController } from './auth/better-auth.controller';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { ChatModule } from './chat/chat.module';
     UploadModule,
     LayoutModule,
     ChatModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

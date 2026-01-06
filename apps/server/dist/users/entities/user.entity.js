@@ -19,6 +19,8 @@ let User = class User {
     role;
     image;
     emailVerified;
+    verificationCode;
+    verificationCodeExpires;
     createdAt;
     updatedAt;
 };
@@ -51,6 +53,14 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'email_verified', default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "emailVerified", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'verification_code', nullable: true, type: 'varchar' }),
+    __metadata("design:type", Object)
+], User.prototype, "verificationCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'verification_code_expires', nullable: true, type: 'timestamp' }),
+    __metadata("design:type", Object)
+], User.prototype, "verificationCodeExpires", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)

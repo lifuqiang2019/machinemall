@@ -99,6 +99,20 @@ let UsersService = class UsersService {
     remove(id) {
         return this.usersRepository.delete(id);
     }
+    async setVerificationCode(id, code, expires) {
+        return this.usersRepository.update(id, {
+            verificationCode: code,
+            verificationCodeExpires: expires,
+        });
+    }
+    async verifyAndRegister(id, hash) {
+        return this.usersRepository.update(id, {
+            password: hash,
+            emailVerified: true,
+            verificationCode: null,
+            verificationCodeExpires: null,
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

@@ -19,6 +19,7 @@ const auth_module_1 = require("./auth/auth.module");
 const upload_module_1 = require("./upload/upload.module");
 const layout_module_1 = require("./layout/layout.module");
 const chat_module_1 = require("./chat/chat.module");
+const email_module_1 = require("./email/email.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -49,6 +50,7 @@ exports.AppModule = AppModule = __decorate([
             upload_module_1.UploadModule,
             layout_module_1.LayoutModule,
             chat_module_1.ChatModule,
+            email_module_1.EmailModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

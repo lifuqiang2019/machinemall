@@ -13,4 +13,6 @@ export declare class UsersService implements OnModuleInit {
     findByEmail(email: string): Promise<User | null>;
     update(id: string, updateUserDto: UpdateUserDto): Promise<import("typeorm").UpdateResult>;
     remove(id: string): Promise<import("typeorm").DeleteResult>;
+    setVerificationCode(id: string, code: string, expires: Date): Promise<import("typeorm").UpdateResult>;
+    verifyAndRegister(id: string, hash: string): Promise<import("typeorm").UpdateResult>;
 }

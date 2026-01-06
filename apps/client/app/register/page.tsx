@@ -21,7 +21,7 @@ export default function RegisterPage() {
     // Timer state
     const [timer, setTimer] = useState(0);
 
-    const handleSendCode = () => {
+    const handleSendCode = async () => {
         if (!email) {
             setError("Please enter email address");
             return;
@@ -34,17 +34,56 @@ export default function RegisterPage() {
         }
         
         setError("");
-        // Start Mock Timer
-        setTimer(60);
-        const interval = setInterval(() => {
-            setTimer((prev) => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
-                return prev - 1;
+        
+        try {
+            const res = await fetch("http://localhost:3000/auth/send-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
             });
-        }, 1000);
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || "Failed to send code");
+            }
+
+            // Start Timer
+            setTimer(60);
+            const interval = setInterval(() => {
+                setTimer((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            
+            setSuccess("Verification code sent to your email");
+            setTimeout(() => setSuccess(""), 3000);
+
+        } catch (err: any) {
+            // Handle rate limit error specifically if message contains "wait"
+            if (err.message && err.message.includes("wait")) {
+                setError(err.message);
+                // Extract seconds from error message "Please wait X seconds"
+                const match = err.message.match(/wait (\d+) seconds/);
+                if (match && match[1]) {
+                    setTimer(parseInt(match[1]));
+                    const interval = setInterval(() => {
+                        setTimer((prev) => {
+                            if (prev <= 1) {
+                                clearInterval(interval);
+                                return 0;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                }
+            } else {
+                setError(err.message || "Failed to send verification code");
+            }
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -67,11 +106,13 @@ export default function RegisterPage() {
         }
 
         try {
+            // Use Better Auth client directly
+            // The code verification is now handled by the backend hook
             await authClient.signUp.email({
                 email,
                 password,
-                name: email.split("@")[0], // Auto-fill name
-                callbackURL: "/"
+                name: email.split("@")[0],
+                code: verificationCode // Pass the code as an additional field
             }, {
                 onError: (ctx) => setError(ctx.error.message || "Registration failed"),
                 onSuccess: () => {
@@ -81,8 +122,9 @@ export default function RegisterPage() {
                     }, 2000);
                 }
             });
-        } catch (err) {
-            setError("An unexpected error occurred");
+
+        } catch (err: any) {
+            setError(err.message || "An unexpected error occurred");
         } finally {
             setIsLoading(false);
         }
